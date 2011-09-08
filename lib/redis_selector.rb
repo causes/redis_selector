@@ -51,7 +51,8 @@ module RedisSelector
 
     redis.select(redis_info['db']) if redis_info['db']
     result = yield redis
-    redis.quit
     result
+  ensure
+    redis.quit if redis
   end
 end
