@@ -1,0 +1,3 @@
+module RedisSelector
+  VERSION = "0.0.1"
+end
