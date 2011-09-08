@@ -35,8 +35,8 @@ module RedisSelector
   def with_redis(what)
     redis_selector = Module.nesting[0]
 
-    config = redis_selector.config
-    redis_info = config_for_env[what] || config_for_env['default'] || DEFAULT_REDIS
+    config = redis_selector.config || {}
+    redis_info = config[what] || config['default'] || DEFAULT_REDIS
 
     redis = if redis_selector.mocking
               # A MockRedis instance doesn't persist anywhere once we
