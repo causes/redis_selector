@@ -36,7 +36,10 @@ module RedisSelector
     redis_selector = Module.nesting[0]
 
     config = redis_selector.config || {}
-    redis_info = config[what] || config['default'] || DEFAULT_REDIS
+    redis_info = (config[what] || config['default'] || DEFAULT_REDIS).
+      inject({}) do |opts, (k, v)|
+        opts.merge!(k.to_sym => v)
+      end
 
     redis = if redis_selector.mocking
               # A MockRedis instance doesn't persist anywhere once we
@@ -44,12 +47,11 @@ module RedisSelector
               # does. That's why we hold onto this mock like this;
               # otherwise, repeated calls to with_redis(:foo) each get
               # a completely empty mock.
-              redis_selector.mock_redises[redis_info['host']] ||= MockRedis.new
+              redis_selector.mock_redises[redis_info[:host]] ||= MockRedis.new(redis_info)
             else
-              Redis.new(:host => redis_info['host'])
+              Redis.new(redis_info)
             end
 
-    redis.select(redis_info['db']) if redis_info['db']
     result = yield redis
     result
   ensure
