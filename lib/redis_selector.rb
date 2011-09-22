@@ -18,8 +18,10 @@ module RedisSelector
   end
 
   def self.unmock!
+    require 'redis'
     self.mocking = false
   end
+  unmock!
 
   def self.configure(config)
     self.config = config
