@@ -15,3 +15,33 @@ describe "RedisSelector" do
     RedisUser.use_redis(:something)
   end
 end
+
+describe "RedisSelector" do
+  before do
+    RedisSelector.configure(
+      :leaderboards => {
+        :host    => 'redisbox',
+        :timeout => 30,
+        :color   => 'blue',
+      },
+      :stringkeys => {
+        'host' => 'localhost',
+        'db'   => 1,
+      })
+  end
+
+  it "passes along arbitrary options" do
+    Redis.should_receive(:new).with(
+      :host    => 'redisbox',
+      :timeout => 30,
+      :color   => 'blue')
+    RedisUser.use_redis(:leaderboards)
+  end
+
+  it "converts keys to symbols" do
+    Redis.should_receive(:new).with(
+      :host => 'localhost',
+      :db   => 1)
+    RedisUser.use_redis(:stringkeys)
+  end
+end
